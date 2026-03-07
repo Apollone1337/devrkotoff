@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Роберт Мадышев | Vibecoding Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Manrope', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        @keyframes pulse-glow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .float { animation: float 3s ease-in-out infinite; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0d0d14; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+        .card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.15);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #22d3ee 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: '#0d0d14',
+                        surface: '#15151f',
+                        surface2: '#1a1a26',
+                        primary: '#22d3ee',
+                        secondary: '#a855f7'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-bg text-white">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { motion, AnimatePresence } = window.Motion;
+
+        const Icon = ({ name, size = 16, className = "" }) => {
+            useEffect(() => { lucide.createIcons(); }, [name]);
+            return <i data-lucide={name} className={className} style={{ width: size, height: size }}></i>;
+        };
+
+        const AURA_IMG = "https://image.qwenlm.ai/public_source/b1ac84fd-a20e-483e-a095-b6a03602ef61/13abfaa9f-0728-421f-92ad-2cb25bd7a53c.png";
+        const FRIDGEN_IMG = "https://image.qwenlm.ai/public_source/b1ac84fd-a20e-483e-a095-b6a03602ef61/1612713a8-f430-4e8d-8780-ce6dce1873cf.png";
+
+        const App = () => {
+            const [activeSection, setActiveSection] = useState('all');
+
+            const sections = [
+                { id: 'all', label: 'Все', icon: 'grid' },
+                { id: 'projects', label: 'Проекты', icon: 'folder' },
+                { id: 'skills', label: 'Навыки', icon: 'zap' },
+                { id: 'about', label: 'Обо мне', icon: 'user' }
+            ];
+
+            const projects = [
+                {
+                    title: 'Fridgen.ru',
+                    subtitle: 'Работающий проект',
+                    description: 'Действующий веб-проект с посещаемостью',
+                    icon: 'globe',
+                    color: 'from-green-500 to-emerald-500',
+                    tags: ['Web', 'Production', 'Live'],
+                    image: FRIDGEN_IMG
+                },
+                {
+                    title: 'Aura Messenger',
+                    subtitle: 'Приватный мессенджер',
+                    description: 'Закрытый мессенджер для узкого круга лиц',
+                    icon: 'message-circle',
+                    color: 'from-primary to-secondary',
+                    tags: ['Flutter', 'Mobile', 'Private'],
+                    image: AURA_IMG
+                },
+                {
+                    title: 'Rust Servers',
+                    subtitle: 'Игровые сервера',
+                    description: 'Разработка и администрирование серверов Rust с кастомными плагинами',
+                    icon: 'server',
+                    color: 'from-orange-500 to-red-500',
+                    tags: ['Rust', 'Lua', 'Admin']
+                },
+                {
+                    title: 'Rust Macros',
+                    subtitle: 'Макросы для игры',
+                    description: 'Собственные макросы и скрипты для оптимизации геймплея',
+                    icon: 'cpu',
+                    color: 'from-purple-500 to-pink-500',
+                    tags: ['Lua', 'Gaming', 'Tools']
+                }
+            ];
+
+            const skills = [
+                { name: 'Rust', level: 95, icon: 'server', color: 'text-orange-400' },
+                { name: 'Flutter', level: 85, icon: 'smartphone', color: 'text-sky-400' },
+                { name: 'React', level: 80, icon: 'layers', color: 'text-cyan-400' },
+                { name: 'Node.js', level: 75, icon: 'server', color: 'text-green-400' },
+                { name: 'Lua', level: 90, icon: 'code-2', color: 'text-blue-400' },
+                { name: 'Tailwind', level: 85, icon: 'zap', color: 'text-teal-400' },
+                { name: 'AI Tools', level: 88, icon: 'bot', color: 'text-purple-400' },
+                { name: 'Git', level: 80, icon: 'github', color: 'text-orange-400' }
+            ];
+
+            const stats = [
+                { value: '6000+', label: 'Часов в Rust', icon: 'clock' },
+                { value: '10+ лет', label: 'За ПК', icon: 'monitor' },
+                { value: '4+', label: 'Года в IT', icon: 'briefcase' },
+                { value: '20+', label: 'Проектов', icon: 'folder' }
+            ];
+
+            return (
+                <div className="min-h-screen bg-bg p-4 md:p-6 lg:p-8">
+                    {/* Header */}
+                    <header className="max-w-7xl mx-auto mb-6">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                                <motion.div 
+                                    whileHover={{ rotate: 180 }}
+                                    transition={{ duration: 0.5 }}
+                                    className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center"
+                                >
+                                    <Icon name="terminal" size={22} className="text-white" />
+                                </motion.div>
+                                <div>
+                                    <h1 className="font-bold text-xl">Роберт Мадышев</h1>
+                                    <p className="text-xs text-gray-500 font-mono">@vibecoder</p>
+                                </div>
+                            </div>
+                            
+                            {/* Navigation Tabs */}
+                            <nav className="flex gap-1 bg-surface rounded-xl p-1.5 overflow-x-auto">
+                                {sections.map(tab => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveSection(tab.id)}
+                                        className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                                            activeSection === tab.id 
+                                                ? 'bg-gradient-to-r from-primary/20 to-secondary/20 text-white border border-primary/30' 
+                                                : 'text-gray-400 hover:text-white hover:bg-surface2'
+                                        }`}
+                                    >
+                                        <Icon name={tab.icon} size={14} />
+                                        {tab.label}
+                                    </button>
+                                ))}
+                            </nav>
+
+                            <a href="mailto:contact@robert.dev" className="px-5 py-2.5 bg-gradient-to-r from-primary to-secondary text-bg rounded-lg text-sm font-semibold hover:opacity-90 transition-all flex items-center gap-2 whitespace-nowrap">
+                                <Icon name="mail" size={14} />
+                                Связаться
+                            </a>
+                        </div>
+                    </header>
+
+                    {/* Main Grid */}
+                    <main className="max-w-7xl mx-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            
+                            {/* Profile Card */}
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="lg:col-span-2 lg:row-span-2 card rounded-2xl p-6 transition-all"
+                            >
+                                <div className="h-full flex flex-col justify-between">
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-4">
+                                            <span className="w-2.5 h-2.5 rounded-full bg-green-500 pulse-glow" />
+                                            <span className="text-xs text-gray-400 font-mono">Открыт к предложениям</span>
+                                        </div>
+                                        <h2 className="text-3xl md:text-4xl font-bold mb-3">
+                                            Вайбкодинг с <span className="text-gradient">ИИ</span>
+                                        </h2>
+                                        <p className="text-gray-400 text-sm leading-relaxed mb-4">
+                                            Разрабатываю проекты на стыке технологий и творчества. 
+                                            От игровых серверов до приватных мессенджеров. 
+                                            За ПК с 10 лет, 6000+ часов в Rust.
+                                        </p>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {['Rust', 'Flutter', 'React', 'AI', 'Lua'].map(tag => (
+                                            <span key={tag} className="px-3 py-1.5 bg-surface rounded-lg text-xs font-medium border border-white/5">
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </motion.div>
+
+                            {/* Stats Grid */}
+                            {stats.map((stat, i) => (
+                                <motion.div 
+                                    key={i}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: i * 0.1 }}
+                                    className="card rounded-2xl p-5 transition-all"
+                                >
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="w-9 h-9 rounded-lg bg-surface2 flex items-center justify-center">
+                                            <Icon name={stat.icon} size={18} className="text-primary" />
+                                        </div>
+                                    </div>
+                                    <div className="text-2xl font-bold mb-1">{stat.value}</div>
+                                    <div className="text-xs text-gray-500">{stat.label}</div>
+                                </motion.div>
+                            ))}
+
+                            {/* Projects */}
+                            {(activeSection === 'all' || activeSection === 'projects') && projects.map((project, i) => (
+                                <motion.div 
+                                    key={i}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: i * 0.1 }}
+                                    className="card rounded-2xl p-5 transition-all group cursor-pointer"
+                                >
+                                    <div className="flex items-start gap-3 mb-3">
+                                        <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${project.color} flex items-center justify-center flex-shrink-0`}>
+                                            <Icon name={project.icon} size={20} className="text-white" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="font-semibold text-sm mb-0.5">{project.title}</h3>
+                                            <p className="text-xs text-gray-500">{project.subtitle}</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-gray-400 mb-3">{project.description}</p>
+                                    {project.image && (
+                                        <div className="rounded-xl overflow-hidden h-24 mb-3">
+                                            <img src={project.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                        </div>
+                                    )}
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {project.tags.map(tag => (
+                                            <span key={tag} className="px-2 py-1 bg-surface2 rounded text-xs text-gray-400">
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            ))}
+
+                            {/* Skills */}
+                            {(activeSection === 'all' || activeSection === 'skills') && (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="lg:col-span-2 card rounded-2xl p-5 transition-all"
+                                >
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <Icon name="zap" size={16} className="text-primary" />
+                                        <span className="text-sm font-medium">Технологии</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                        {skills.map((skill, i) => (
+                                            <div key={i} className="bg-surface2 rounded-xl p-3 hover:bg-surface transition-all">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <Icon name={skill.icon} size={14} className={skill.color} />
+                                                    <span className="text-xs font-medium">{skill.name}</span>
+                                                </div>
+                                                <div className="h-1.5 bg-bg rounded-full overflow-hidden">
+                                                    <motion.div 
+                                                        initial={{ width: 0 }}
+                                                        animate={{ width: `${skill.level}%` }}
+                                                        transition={{ delay: i * 0.1, duration: 0.5 }}
+                                                        className={`h-full rounded-full ${skill.color.replace('text', 'bg')}`}
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* About / Rust Info */}
+                            {(activeSection === 'all' || activeSection === 'about') && (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="card rounded-2xl p-5 transition-all"
+                                >
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <Icon name="user" size={16} className="text-primary" />
+                                        <span className="text-sm font-medium">Обо мне</span>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                                                <Icon name="gamepad-2" size={16} className="text-orange-400" />
+                                            </div>
+                                            <div>
+                                                <div className="text-sm font-medium">Rust: 6000+ часов</div>
+                                                <div className="text-xs text-gray-500">Сервера, макросы, плагины</div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                                                <Icon name="monitor" size={16} className="text-primary" />
+                                            </div>
+                                            <div>
+                                                <div className="text-sm font-medium">10+ лет за ПК</div>
+                                                <div className="text-xs text-gray-500">Опыт с детства</div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-secondary/20 flex items-center justify-center">
+                                                <Icon name="code-2" size={16} className="text-secondary" />
+                                            </div>
+                                            <div>
+                                                <div className="text-sm font-medium">4+ года в IT</div>
+                                                <div className="text-xs text-gray-500">Профессиональная разработка</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* Contact Card */}
+                            <motion.div 
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="card rounded-2xl p-5 transition-all"
+                            >
+                                <div className="h-full flex flex-col justify-between">
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <Icon name="message-circle" size={16} className="text-primary" />
+                                            <span className="text-sm font-medium">Контакты</span>
+                                        </div>
+                                        <p className="text-xs text-gray-400 mb-4">Готов обсудить ваш проект</p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <a href="https://github.com" className="w-10 h-10 rounded-xl bg-surface2 hover:bg-surface flex items-center justify-center transition-all">
+                                            <Icon name="github" size={18} />
+                                        </a>
+                                        <a href="https://linkedin.com" className="w-10 h-10 rounded-xl bg-surface2 hover:bg-surface flex items-center justify-center transition-all">
+                                            <Icon name="linkedin" size={18} />
+                                        </a>
+                                        <a href="mailto:contact@robert.dev" className="w-10 h-10 rounded-xl bg-surface2 hover:bg-surface flex items-center justify-center transition-all">
+                                            <Icon name="mail" size={18} />
+                                        </a>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="max-w-7xl mx-auto mt-8 pt-6 border-t border-white/5">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+                            <span>© 2024 Роберт Мадышев</span>
+                            <div className="flex items-center gap-4">
+                                <span className="flex items-center gap-1.5">
+                                    <Icon name="sparkles" size={12} className="text-primary" />
+                                    Vibecoding
+                                </span>
+                                <span className="flex items-center gap-1.5">
+                                    <Icon name="bot" size={12} className="text-secondary" />
+                                    AI Powered
+                                </span>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
+
