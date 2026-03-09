@@ -1,0 +1,521 @@
+<!-- c:\Users\User\Desktop\rkotoff\portfolio.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Портфолио | Роберт Мадышев</title>
+    
+    <!-- Fonts & Tailwind (как на главной) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        charcoal: '#121212',
+                        electricBlue: '#007AFF',
+                        silver: '#C0C0C0',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Montserrat', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #2a2a2a 1px, transparent 1px), linear-gradient(to bottom, #2a2a2a 1px, transparent 1px)",
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html { 
+            scroll-behavior: smooth;
+            font-size: 16px;
+            overflow-y: scroll; 
+        }
+
+        @media (max-width: 768px) {
+            html {
+                font-size: 14px;
+            }
+        }
+
+        body { background-color: #121212; color: #E5E5E5; font-family: 'Inter', sans-serif; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121212;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #007AFF;
+        }
+
+        .glass-panel {
+            background: rgba(30, 30, 30, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s ease; }
+        .glass-card:hover { border-color: rgba(0, 122, 255, 0.5); background: rgba(255, 255, 255, 0.06); transform: translateX(5px); }
+        .tech-grid { background-size: 40px 40px; mask-image: linear-gradient(to bottom, black 40%, transparent 100%); }
+        .filter-btn.active { background: #007AFF; color: white; border-color: #007AFF; }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-slide-in { animation: slideIn 0.4s ease-out forwards; }
+
+        /* Modal Styles */
+        .modal { position: fixed; inset: 0; z-index: 100; display: none; }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+        .modal-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(5px); }
+        .modal-wrapper { position: relative; z-index: 2; width: 100%; height: 100%; padding: 1rem; display: flex; align-items: center; justify-content: center; }
+        .modal-container { width: 100%; max-width: 1000px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; background: #1a1a1a; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        
+        @media (min-width: 768px) {
+            .modal-container { flex-direction: row; height: 80vh; }
+        }
+        
+        .modal-gallery { flex: 1.5; background: #000; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .modal-gallery img { width: 100%; height: 100%; object-fit: contain; }
+        .modal-info { flex: 1; overflow-y: auto; padding: 1.5rem; background: rgba(30,30,30,0.95); border-left: 1px solid rgba(255,255,255,0.05); }
+        
+        .gallery-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; padding: 0.5rem; cursor: pointer; border-radius: 50%; transition: background 0.2s; }
+        .gallery-btn:hover { background: rgba(0,122,255,0.8); }
+        .gallery-prev { left: 1rem; }
+        .gallery-next { right: 1rem; }
+        
+        .info-label { font-size: 0.75rem; text-transform: uppercase; color: #888; margin-bottom: 0.5rem; font-weight: bold; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.5rem; }
+        .tech-tag { display: inline-block; padding: 0.25rem 0.5rem; background: rgba(0,122,255,0.1); color: #007AFF; border-radius: 0.25rem; font-size: 0.75rem; margin-right: 0.5rem; margin-bottom: 0.5rem; border: 1px solid rgba(0,122,255,0.2); }
+        .feature-item { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.9rem; color: #ccc; margin-bottom: 0.5rem; }
+        .feature-item svg { color: #007AFF; width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
+    </style>
+</head>
+<body>
+
+    <!-- Background -->
+    <div class="fixed inset-0 z-[-1] bg-charcoal">
+        <div class="absolute inset-0 bg-grid-pattern tech-grid opacity-20"></div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="fixed top-0 w-full z-50 glass-panel border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
+            <a href="index.html" class="font-display font-bold text-lg sm:text-xl tracking-tighter text-white hover:text-electricBlue transition-colors">
+                DEV<span class="text-electricBlue">RKOTOFF</span>
+            </a>
+            <a href="index.html" class="px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold text-silver hover:text-white transition-all flex items-center gap-2 group rounded-full ring-1 ring-inset ring-white/10 hover:bg-white/5 active:scale-95">
+                <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                На главную
+            </a>
+        </div>
+    </nav>
+
+    <main class="pt-32 pb-20 px-4 sm:px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-10">
+                <h1 class="font-display text-3xl sm:text-4xl font-bold text-white mb-3">Хронология Проектов</h1>
+                <p class="text-silver text-sm">Архив разработанных систем, приложений и сервисов</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="flex flex-wrap gap-2 mb-12" id="filters">
+                <button onclick="filterProjects('all')" class="filter-btn active px-4 py-2 rounded-full border border-white/10 text-xs font-bold uppercase tracking-wider transition-all hover:border-electricBlue/50 active:scale-95">Все</button>
+                <button onclick="filterProjects('Web')" class="filter-btn px-4 py-2 rounded-full border border-white/10 text-xs font-bold uppercase tracking-wider transition-all hover:border-electricBlue/50 active:scale-95">Web</button>
+                <button onclick="filterProjects('Mobile')" class="filter-btn px-4 py-2 rounded-full border border-white/10 text-xs font-bold uppercase tracking-wider transition-all hover:border-electricBlue/50 active:scale-95">Mobile</button>
+                <button onclick="filterProjects('AI')" class="filter-btn px-4 py-2 rounded-full border border-white/10 text-xs font-bold uppercase tracking-wider transition-all hover:border-electricBlue/50 active:scale-95">AI</button>
+                <button onclick="filterProjects('Gamedev')" class="filter-btn px-4 py-2 rounded-full border border-white/10 text-xs font-bold uppercase tracking-wider transition-all hover:border-electricBlue/50 active:scale-95">Gamedev</button>
+                <button onclick="filterProjects('PC')" class="filter-btn px-4 py-2 rounded-full border border-white/10 text-xs font-bold uppercase tracking-wider transition-all hover:border-electricBlue/50 active:scale-95">PC</button>
+            </div>
+
+            <!-- Timeline -->
+            <div class="space-y-8" id="timeline-container">
+                <!-- Content will be generated by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Project Modal -->
+    <div id="projectModal" class="modal">
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-wrapper">
+            <div class="modal-container animate-slide-in">
+                <!-- Gallery -->
+                <div class="modal-gallery">
+                    <img id="modalImage" src="" alt="">
+                    <button class="gallery-btn gallery-prev" onclick="prevImage()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <button class="gallery-btn gallery-next" onclick="nextImage()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+                <!-- Info -->
+                <div class="modal-info">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <span id="modalCategory" class="text-xs font-bold px-2 py-1 rounded mb-2 inline-block"></span>
+                            <h2 id="modalTitle" class="text-2xl font-bold text-white leading-tight"></h2>
+                        </div>
+                        <button onclick="closeModal()" class="text-gray-400 hover:text-white">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <div class="info-label"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> О проекте</div>
+                        <p id="modalDesc" class="text-gray-300 text-sm leading-relaxed"></p>
+                    </div>
+
+                    <div class="mb-6" id="modalStorySection" style="display: none;">
+                        <div class="info-label"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg> История разработки</div>
+                        <p id="modalStory" class="text-gray-300 text-sm leading-relaxed whitespace-pre-line"></p>
+                    </div>
+
+                    <div class="mb-6">
+                        <div class="info-label"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg> Стек технологий</div>
+                        <div id="modalTech"></div>
+                    </div>
+
+                    <div>
+                        <div class="info-label"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Особенности</div>
+                        <div id="modalFeatures"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const projects = [
+            {
+                year: 2024,
+                items: [
+                    { 
+                        id: "aura",
+                        title: "Aura Messenger", 
+                        category: "Mobile", 
+                        date: "Март", 
+                        desc: "Приватный мессенджер с шифрованием. Полная анонимность, отсутствие логов и современные алгоритмы защиты данных.", 
+                        image: "https://image.qwenlm.ai/public_source/3a738539-db50-4d38-9677-f9293d739a43/1493a07f5-0fa0-4039-93ec-b4c7aefa5535.png",
+                        story: "Идея проекта возникла из потребности в безопасном общении без цифрового следа.\n\nЯ начал с проектирования архитектуры на базе WebRTC для прямых соединений. Основной сложностью была реализация двойного храповика (Double Ratchet Algorithm) на Dart, но это позволило обеспечить Forward Secrecy.\n\nИнтерфейс переписывался трижды, пока мы не пришли к текущему минималистичному дизайну, который не отвлекает от общения.",
+                        images: ["https://image.qwenlm.ai/public_source/3a738539-db50-4d38-9677-f9293d739a43/1493a07f5-0fa0-4039-93ec-b4c7aefa5535.png"],
+                        tech: ["Flutter", "Dart", "WebRTC", "E2E Encryption"],
+                        features: ["Голосовые и видеозвонки", "Исчезающие сообщения", "Защита от скриншотов"]
+                    },
+                    { 
+                        id: "crypto",
+                        title: "Crypto Dashboard", 
+                        category: "Web", 
+                        date: "Январь", 
+                        desc: "Аналитика портфеля криптовалют в реальном времени. Интеграция с популярными биржами.", 
+                        story: "Проект начался как личный инструмент для отслеживания активов. Стандартные трекеры были либо платными, либо неудобными.\n\nЯ использовал WebSocket API Binance и Bybit для получения котировок без задержек. Самым интересным вызовом была оптимизация рендеринга графиков при большом потоке данных — пришлось использовать Web Workers.",
+                        image: "https://via.placeholder.com/150/1a1a1a/333333?text=Crypto",
+                        images: ["https://via.placeholder.com/600/1a1a1a/333333?text=Dashboard+View", "https://via.placeholder.com/600/1a1a1a/333333?text=Mobile+View"],
+                        tech: ["React", "TypeScript", "WebSocket", "Chart.js"],
+                        features: ["Real-time котировки", "Управление портфелем", "Уведомления о цене"]
+                    }
+                ]
+            },
+            {
+                year: 2023,
+                items: [
+                    { 
+                        id: "chef",
+                        title: "Шеф из Холодильника", 
+                        category: "AI", 
+                        date: "Ноябрь", 
+                        desc: "AI-сервис подбора рецептов по фото ингредиентов. Умный помощник на кухне.", 
+                        story: "Всё началось с хакатона и вопроса: 'Что приготовить из того, что осталось в холодильнике?'.\n\nПервая версия просто искала по тегам, но подключение Vision API и GPT-4 позволило распознавать продукты по фото и генерировать уникальные рецепты, а не просто искать их в базе.",
+                        image: "https://image.qwenlm.ai/public_source/3a738539-db50-4d38-9677-f9293d739a43/15db0cecd-58ab-4bfa-93fc-5d3e7fa51781.png",
+                        images: ["https://image.qwenlm.ai/public_source/3a738539-db50-4d38-9677-f9293d739a43/15db0cecd-58ab-4bfa-93fc-5d3e7fa51781.png"],
+                        tech: ["Python", "OpenAI API", "FastAPI", "React"],
+                        features: ["Распознавание продуктов", "Генерация рецептов", "Учет калорий"]
+                    },
+                    { id: "bot-platform", title: "Telegram Bot Platform", category: "Web", date: "Июнь", desc: "Конструктор ботов для бизнеса", image: "https://via.placeholder.com/150/1a1a1a/333333?text=Bot", images: ["https://via.placeholder.com/600/1a1a1a/333333?text=Bot+Platform"], tech: ["Node.js", "Telegraf", "MongoDB"], features: ["Visual Editor", "Analytics"] },
+                    { id: "landing-builder", title: "Landing Page Builder", category: "Web", date: "Апрель", desc: "Визуальный конструктор лендингов", image: "https://via.placeholder.com/150/1a1a1a/333333?text=Landing", images: ["https://via.placeholder.com/600/1a1a1a/333333?text=Builder"], tech: ["Vue.js", "Laravel"], features: ["Drag & Drop", "Templates"] },
+                    { id: "ecommerce-plugin", title: "E-commerce Plugin", category: "Web", date: "Февраль", desc: "Плагин оплаты для CMS", image: "https://via.placeholder.com/150/1a1a1a/333333?text=Shop", images: ["https://via.placeholder.com/600/1a1a1a/333333?text=Plugin"], tech: ["PHP", "JS"], features: ["Secure Payments", "Easy Integration"] }
+                ]
+            },
+            {
+                year: 2022,
+                items: [
+                    { id: "fitness-app", title: "Mobile Fitness App", category: "Mobile", date: "Октябрь", desc: "Приложение для отслеживания тренировок", image: "https://via.placeholder.com/150/1a1a1a/333333?text=Fitness", images: ["https://via.placeholder.com/600/1a1a1a/333333?text=App"], tech: ["Swift", "HealthKit"], features: ["Activity Tracking", "Diet Plan"] },
+                    { id: "ai-generator", title: "AI Image Generator", category: "AI", date: "Май", desc: "Генератор изображений по тексту", image: "https://via.placeholder.com/150/1a1a1a/333333?text=AI-Art", images: ["https://via.placeholder.com/600/1a1a1a/333333?text=Generator"], tech: ["Python", "Stable Diffusion"], features: ["Text to Image", "Style Transfer"] },
+                    { id: "crm-system", title: "CRM System", category: "Web", date: "Февраль", desc: "Система управления клиентами для B2B", image: "https://via.placeholder.com/150/1a1a1a/333333?text=CRM", images: ["https://via.placeholder.com/600/1a1a1a/333333?text=CRM"], tech: ["Angular", ".NET"], features: ["Lead Management", "Reporting"] }
+                ]
+            },
+            {
+                year: 2021,
+                items: [
+                    { id: "rust-cluster", title: "Rust Server Cluster", category: "Gamedev", date: "Июль", desc: "Кластер серверов Rust с кастомными плагинами", image: "https://via.placeholder.com/150/1a1a1a/333333?text=Rust", images: ["https://via.placeholder.com/600/1a1a1a/333333?text=Rust+Server"], tech: ["C#", "Rust", "Oxide"], features: ["Custom Plugins", "High Performance"] },
+                    { id: "pc-cleaner", title: "PC Cleaner Utility", category: "PC", date: "Март", desc: "Утилита для очистки диска на Windows", image: "https://via.placeholder.com/150/1a1a1a/333333?text=PC", images: ["https://via.placeholder.com/600/1a1a1a/333333?text=Utility"], tech: ["C++", "Qt"], features: ["Disk Cleanup", "Registry Fix"] }
+                ]
+            },
+            {
+                year: 2020,
+                items: [
+                    { id: "gamedev", title: "Game Server Dashboard", category: "Gamedev", date: "Август", desc: "Панель управления серверами", image: "https://image.qwenlm.ai/public_source/3a738539-db50-4d38-9677-f9293d739a43/1984c9da1-e8ff-4605-8897-73b9e7f097c9.png", images: ["https://image.qwenlm.ai/public_source/3a738539-db50-4d38-9677-f9293d739a43/1984c9da1-e8ff-4605-8897-73b9e7f097c9.png"], tech: ["PHP", "MySQL", "SourceQuery"], features: ["RCON Control", "Player Stats"] },
+                    { id: "forum-engine", title: "Forum Engine", category: "Web", date: "Май", desc: "Собственный движок для форума", image: "https://via.placeholder.com/150/1a1a1a/333333?text=Forum", images: ["https://via.placeholder.com/600/1a1a1a/333333?text=Forum"], tech: ["PHP", "MySQL"], features: ["BBCode", "Moderation Tools"] },
+                    { id: "csgo-mod", title: "CS:GO Server Mod", category: "Gamedev", date: "Январь", desc: "Модификация для сервера CS:GO", image: "https://via.placeholder.com/150/1a1a1a/333333?text=CSGO", images: ["https://via.placeholder.com/600/1a1a1a/333333?text=CSGO"], tech: ["SourcePawn"], features: ["Custom Game Mode", "Skins"] }
+                ]
+            },
+            {
+                year: 2015,
+                items: [
+                    { id: "minecraft-network", title: "Minecraft Server Network", category: "Gamedev", date: "Сентябрь", desc: "Сеть серверов с онлайном 300+", image: "https://via.placeholder.com/150/1a1a1a/333333?text=MC", images: ["https://via.placeholder.com/600/1a1a1a/333333?text=Minecraft"], tech: ["Java", "Spigot API"], features: ["BungeeCord", "Economy System"] }
+                ]
+            }
+        ];
+
+        function getProjectStyle(item) {
+            const title = item.title.toLowerCase();
+            const desc = item.desc.toLowerCase();
+            const cat = item.category;
+
+            // Default style
+            let style = { 
+                bg: 'bg-electricBlue/10', border: 'border-electricBlue/30', text: 'text-electricBlue', 
+                label: cat.substring(0, 4).toUpperCase(), 
+                icon: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>'
+            };
+
+            if (cat === 'Gamedev') {
+                if (title.includes('rust') || desc.includes('rust')) {
+                    style = { 
+                        bg: 'bg-orange-500/10', border: 'border-orange-500/30', text: 'text-orange-500', 
+                        label: 'RUST', 
+                        icon: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>'
+                    };
+                } else if (title.includes('minecraft') || desc.includes('minecraft')) {
+                    style = { 
+                        bg: 'bg-green-500/10', border: 'border-green-500/30', text: 'text-green-500', 
+                        label: 'MC', 
+                        icon: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>'
+                    };
+                } else {
+                    style = { 
+                        bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', text: 'text-emerald-500', 
+                        label: 'GAME', 
+                        icon: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg>'
+                    };
+                }
+            } else if (cat === 'Web') {
+                if (title.includes('landing') || desc.includes('лендинг')) {
+                    style = { 
+                        bg: 'bg-pink-500/10', border: 'border-pink-500/30', text: 'text-pink-500', 
+                        label: 'LD', 
+                        icon: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>'
+                    };
+                } else {
+                    style = { 
+                        bg: 'bg-blue-500/10', border: 'border-blue-500/30', text: 'text-blue-500', 
+                        label: 'WEB', 
+                        icon: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>'
+                    };
+                }
+            } else if (cat === 'Mobile') {
+                style = { 
+                    bg: 'bg-cyan-500/10', border: 'border-cyan-500/30', text: 'text-cyan-500', 
+                    label: 'APP', 
+                    icon: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>'
+                };
+            } else if (cat === 'AI') {
+                style = { 
+                    bg: 'bg-purple-500/10', border: 'border-purple-500/30', text: 'text-purple-500', 
+                    label: 'AI', 
+                    icon: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>'
+                };
+            } else if (cat === 'PC') {
+                style = { 
+                    bg: 'bg-gray-500/10', border: 'border-gray-500/30', text: 'text-gray-400', 
+                    label: 'PC', 
+                    icon: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>'
+                };
+            }
+
+            return style;
+        }
+
+        function renderProjects(filter = 'all') {
+            const container = document.getElementById('timeline-container');
+            container.innerHTML = '';
+
+            projects.forEach(group => {
+                // Filter items in this year
+                const filteredItems = group.items.filter(item => filter === 'all' || item.category === filter);
+                
+                if (filteredItems.length > 0) {
+                    // Year Header
+                    const yearBlock = document.createElement('div');
+                    yearBlock.className = 'relative border-l border-white/10 pl-8 pb-2';
+                    yearBlock.innerHTML = `
+                        <div class="absolute -left-3 top-0 w-6 h-6 bg-charcoal border border-electricBlue rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(0,122,255,0.3)]">
+                            <div class="w-2 h-2 bg-electricBlue rounded-full"></div>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white mb-6 -mt-1 font-display">${group.year}</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                    `;
+
+                    const itemsContainer = yearBlock.querySelector('.grid');
+
+                    filteredItems.forEach((item, index) => {
+                        const style = getProjectStyle(item);
+                        const card = document.createElement('a');
+                        card.className = 'glass-card p-3 rounded-xl flex gap-4 items-center hover:bg-white/5 group text-left opacity-0 animate-slide-in cursor-pointer transition-all hover:translate-x-1';
+                        card.style.animationDelay = `${index * 50}ms`;
+                        card.onclick = () => openModal(item);
+                        card.innerHTML = `
+                            <div class="w-20 h-14 sm:w-24 sm:h-16 rounded-lg overflow-hidden shrink-0 bg-gray-800">
+                                <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="flex items-center gap-1.5 text-[10px] font-bold ${style.text} uppercase tracking-wider border ${style.border} ${style.bg} px-2 py-1 rounded">
+                                        ${style.icon}
+                                        ${style.label}
+                                    </span>
+                                    <span class="text-xs text-gray-500">•</span>
+                                    <span class="text-xs text-gray-400">${item.date}</span>
+                                </div>
+                                <h3 class="text-sm sm:text-base font-bold text-white truncate group-hover:text-electricBlue transition-colors">${item.title}</h3>
+                                <p class="text-xs sm:text-sm text-gray-400 truncate">${item.desc}</p>
+                            </div>
+                            <div class="pr-2 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 duration-300">
+                                <svg class="w-5 h-5 text-electricBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </div>
+                        `;
+                        itemsContainer.appendChild(card);
+                    });
+
+                    container.appendChild(yearBlock);
+                }
+            });
+        }
+
+        // Modal Logic
+        let currentProjectImages = [];
+        let currentImageIndex = 0;
+
+        function openModal(item) {
+            const modal = document.getElementById('projectModal');
+            const style = getProjectStyle(item);
+            
+            // Set Content
+            document.getElementById('modalTitle').textContent = item.title;
+            document.getElementById('modalDesc').textContent = item.desc;
+            
+            // Story
+            const storySection = document.getElementById('modalStorySection');
+            if (item.story) {
+                document.getElementById('modalStory').textContent = item.story;
+                storySection.style.display = 'block';
+            } else {
+                storySection.style.display = 'none';
+            }
+
+            const catBadge = document.getElementById('modalCategory');
+            catBadge.textContent = style.label;
+            catBadge.className = `text-xs font-bold px-2 py-1 rounded mb-2 inline-block ${style.bg} ${style.text} border ${style.border}`;
+
+            // Tech
+            const techContainer = document.getElementById('modalTech');
+            techContainer.innerHTML = (item.tech || []).map(t => `<span class="tech-tag">${t}</span>`).join('');
+
+            // Features
+            const featuresContainer = document.getElementById('modalFeatures');
+            featuresContainer.innerHTML = (item.features || []).map(f => `
+                <div class="feature-item">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <span>${f}</span>
+                </div>
+            `).join('');
+
+            // Gallery
+            currentProjectImages = item.images || [item.image];
+            currentImageIndex = 0;
+            updateModalImage();
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('projectModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function updateModalImage() {
+            document.getElementById('modalImage').src = currentProjectImages[currentImageIndex];
+        }
+
+        function nextImage() { currentImageIndex = (currentImageIndex + 1) % currentProjectImages.length; updateModalImage(); }
+        function prevImage() { currentImageIndex = (currentImageIndex - 1 + currentProjectImages.length) % currentProjectImages.length; updateModalImage(); }
+
+        function filterProjects(category) {
+            const container = document.getElementById('timeline-container');
+            
+            container.style.transition = 'opacity 0.15s ease-out';
+            container.style.opacity = '0';
+
+            setTimeout(() => {
+                // Update buttons
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    if (btn.textContent === (category === 'all' ? 'Все' : category)) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+                renderProjects(category);
+                container.style.transition = 'opacity 0.3s ease-in';
+                container.style.opacity = '1';
+            }, 150);
+        }
+
+        // Init
+        renderProjects();
+
+        // Handle opening modal from URL
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectIdToOpen = urlParams.get('project');
+
+            if (projectIdToOpen) {
+                const allProjects = projects.flatMap(group => group.items);
+                const projectData = allProjects.find(p => p.id === projectIdToOpen);
+                if (projectData) {
+                    // Use a small timeout to let the page render and animations finish
+                    setTimeout(() => openModal(projectData), 100);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
